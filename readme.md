@@ -106,7 +106,7 @@ org.coody.framework.box.annotation.JsonSerialize序列化JSON输出，用于cont
 
 org.coody.framework.box.annotation.OutBean 输出Bean。类似于Resource/AutoWired注解
 
-org.coody.framework.box.annotation.PathBinding 输出Bean。类似于Resource/AutoWired注
+org.coody.framework.box.annotation.PathBinding 初始化Bean。类似于spring的Controller等注解，内置参数为请求路径
 
  **(3)、类说明-适配器** 
 
