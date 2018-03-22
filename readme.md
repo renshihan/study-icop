@@ -138,7 +138,7 @@ org.coody.framework.box.proyx.CglibProxy 基于cglib字节码创建子类的实�
 
  **(9)、类说明-包装类** 
 
-org.coody.framework.box.wrapper.AspectWrapper 本处命名可能不尽规范。本类用于多切面的调度和适配  
+org.coody.framework.box.point.AspectPoint 本类用于多切面的调度和适配  
 
  
 
