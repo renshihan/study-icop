@@ -1,3 +1,7 @@
+本项目原地址：
+    https://gitee.com/coodyer/coody-icop
+
+本项目只做本人学习使用，如有任何用途，请联系原作者
 
 ### Icop
 
