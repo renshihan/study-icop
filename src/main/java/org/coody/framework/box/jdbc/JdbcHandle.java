@@ -21,6 +21,7 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.coody.framework.box.cache.LocalCache;
 import org.coody.framework.box.constant.BoxConstant;
@@ -37,7 +38,7 @@ import org.coody.framework.util.PropertUtil;
 import org.coody.framework.util.StringUtil;
 
 import com.alibaba.fastjson.JSON;
-
+@Slf4j
 public class JdbcHandle {
 
 	private DataSource dataSource;
@@ -115,7 +116,7 @@ public class JdbcHandle {
 				// statement用来执行SQL语句
 				statement = conn.prepareStatement(sql);
 				Long threadId = Thread.currentThread().getId();
-				System.out.println("[线程ID：" + threadId + "][执行语句:" + parseParams(sql, params) + "]");
+				log.info("[线程ID：" + threadId + "][执行语句:" + parseParams(sql, params) + "]");
 				if (!StringUtil.isNullOrEmpty(params)) {
 					for (int i = 0; i < params.length; i++) {
 						statement.setObject((i + 1), params[i]);
@@ -1135,7 +1136,7 @@ public class JdbcHandle {
 	}
 
 	public void main(String[] args) {
-		System.out.println(JSON.toJSONString(getPrimaryKeys("user_info")));
+		log.info(JSON.toJSONString(getPrimaryKeys("user_info")));
 	}
 
 }

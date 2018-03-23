@@ -10,16 +10,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.coody.framework.box.annotation.CronTask;
 import org.coody.framework.box.point.AspectPoint;
 import org.coody.framework.util.DateUtils;
 import org.coody.framework.util.StringUtil;
 
-
+@Slf4j
 public class TaskTrigger {
-	
-	static Logger logger=Logger.getLogger(TaskTrigger.class);
+
 
 	
 	public static Method getTriggerMethod(){
@@ -48,7 +47,7 @@ public class TaskTrigger {
 		cronExpressionMap.put(method, zonedDateTime);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtils.DATETIME_PATTERN, Locale.CHINA);
 		Date nextRunDate=DateUtils.toDate(zonedDateTime.toLocalDateTime().format(formatter));
-		logger.debug(bean.getClass().getName()+":"+method.getName()+" will run on "+DateUtils.toString(nextRunDate));
+		log.debug(bean.getClass().getName()+":"+method.getName()+" will run on "+DateUtils.toString(nextRunDate));
 		long timeRage=nextRunDate.getTime()-new Date().getTime();
 		TaskThreadPool.taskPool.schedule(new Runnable() {
 			@Override
@@ -66,7 +65,7 @@ public class TaskTrigger {
 	/**
 	 * 定时任务管理
 	 * 
-	 * @param pjp
+	 * @param aspect
 	 * @return
 	 * @throws Throwable
 	 */

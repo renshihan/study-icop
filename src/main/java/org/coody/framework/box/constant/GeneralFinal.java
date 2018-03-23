@@ -5,7 +5,7 @@ public class GeneralFinal {
 	/**
 	 * 日志容器
 	 */
-	public static final String LOGGER_WRAPPER="LOGGER_WRAPPER";
+	public static final String log_WRAPPER="log_WRAPPER";
 	
 	/**
 	 * 请求容器

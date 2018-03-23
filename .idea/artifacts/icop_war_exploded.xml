@@ -12,9 +12,12 @@
           <element id="library" level="project" name="Maven: commons-dbcp:commons-dbcp:20030825.184428" />
           <element id="library" level="project" name="Maven: cglib:cglib:3.1" />
           <element id="library" level="project" name="Maven: org.ow2.asm:asm:4.2" />
-          <element id="library" level="project" name="Maven: log4j:log4j:1.2.9" />
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.42" />
           <element id="library" level="project" name="Maven: commons-collections:commons-collections:3.2.2" />
+          <element id="library" level="project" name="Maven: org.projectlombok:lombok:1.16.20" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.1.11" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.1.11" />
         </element>
       </element>
       <element id="directory" name="META-INF">

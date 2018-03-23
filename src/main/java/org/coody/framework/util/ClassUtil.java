@@ -1,5 +1,7 @@
 package org.coody.framework.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -11,7 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
+@Slf4j
 public class ClassUtil {
 
 	/** 
@@ -27,24 +29,28 @@ public class ClassUtil {
         // 是否循环迭代  
         boolean recursive = true;  
         // 获取包的名字 并进行替换  
-        String packageName = pack;  
+        String packageName = pack;
+        //org/coody/web
         String packageDirName = packageName.replace('.', '/');  
         // 定义一个枚举的集合 并进行循环来处理这个目录下的things  
         Enumeration<URL> dirs;  
         try {  
             dirs = Thread.currentThread().getContextClassLoader().getResources(  
-                    packageDirName);  
+                    packageDirName);
+            log.info("开始加载class----{}",dirs);
             // 循环迭代下去  
             while (dirs.hasMoreElements()) {  
                 // 获取下一个元素  
-                URL url = dirs.nextElement();  
+                URL url = dirs.nextElement();
+                log.info("获取到的url---,{}",url.toString());
                 // 得到协议的名称  
                 String protocol = url.getProtocol();  
                 // 如果是以文件的形式保存在服务器上  
-                if ("file".equals(protocol)) {  
-                    // 获取包的物理路径  
-                    String filePath = URLDecoder.decode(url.getFile(), "UTF-8");  
-                    // 以文件的方式扫描整个包下的文件 并添加到集合中  
+                if ("file".equals(protocol)) {
+                    // 获取包的物理路径
+                    String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
+                    log.info("文件路径----{}",filePath);
+                    // 以文件的方式扫描整个包下的文件 并添加到集合中
                     findAndAddClassesInPackageByFile(packageName, filePath,  
                             recursive, classes);  
                 } else if ("jar".equals(protocol)) {  

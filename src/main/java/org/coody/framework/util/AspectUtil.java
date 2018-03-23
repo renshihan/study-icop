@@ -88,17 +88,17 @@ public class AspectUtil {
 		return handle.value();
 	}
 	public static void writeLog(String module) {
-		ThreadContainer.set(GeneralFinal.LOGGER_WRAPPER, module);
+		ThreadContainer.set(GeneralFinal.log_WRAPPER, module);
 	}
 	
 	public static String minusLog() {
-		String logHead = ThreadContainer.get(GeneralFinal.LOGGER_WRAPPER);
+		String logHead = ThreadContainer.get(GeneralFinal.log_WRAPPER);
 		if (logHead == null) {
 			return "";
 		}
 		String tabs[] = logHead.split("_");
 		if (tabs.length == 1) {
-			ThreadContainer.set(GeneralFinal.LOGGER_WRAPPER, "");
+			ThreadContainer.set(GeneralFinal.log_WRAPPER, "");
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
@@ -108,7 +108,7 @@ public class AspectUtil {
 			}
 			sb.append(tabs[i]);
 		}
-		ThreadContainer.set(GeneralFinal.LOGGER_WRAPPER, sb.toString());
+		ThreadContainer.set(GeneralFinal.log_WRAPPER, sb.toString());
 		return sb.toString();
 	}
 	public static Object getMethodPara(Method method, String fieldName, Object[] args) {
@@ -138,7 +138,7 @@ public class AspectUtil {
 		ThreadContainer.set(field, bean);
 	}
 	public static String getCurrLog() {
-		return ThreadContainer.get(GeneralFinal.LOGGER_WRAPPER);
+		return ThreadContainer.get(GeneralFinal.log_WRAPPER);
 	}
 
 }

@@ -2,7 +2,7 @@ package org.coody.framework.box.aspect;
 
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.coody.framework.box.annotation.Around;
 import org.coody.framework.box.annotation.CacheWipe;
 import org.coody.framework.box.annotation.CacheWipes;
@@ -14,14 +14,13 @@ import org.coody.framework.util.AspectUtil;
 import org.coody.framework.util.StringUtil;
 
 @InitBean
+@Slf4j
 public class CacheAspect {
-
-	private final Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * 写缓存操作
 	 * 
-	 * @param pjp
+	 * @param aspect
 	 * @return
 	 * @throws Throwable
 	 */
@@ -61,7 +60,7 @@ public class CacheAspect {
 		// 获取缓存
 		try {
 			Object result = LocalCache.getCache(key);
-			logger.debug("获取缓存:" + key + ",结果:" + result);
+			log.debug("获取缓存:" + key + ",结果:" + result);
 			if (!StringUtil.isNullOrEmpty(result)) {
 				return result;
 			}
@@ -72,7 +71,7 @@ public class CacheAspect {
 		if (result != null) {
 			try {
 				LocalCache.setCache(key, result, cacheTimer);
-				logger.debug("设置缓存:" + key + ",结果:" + result + ",缓存时间:" + cacheTimer);
+				log.debug("设置缓存:" + key + ",结果:" + result + ",缓存时间:" + cacheTimer);
 			} catch (Exception e) {
 			}
 		}
@@ -82,7 +81,7 @@ public class CacheAspect {
 	/**
 	 * 缓存清理
 	 * 
-	 * @param pjp
+	 * @param aspect
 	 * @return
 	 * @throws Throwable
 	 */
@@ -109,7 +108,7 @@ public class CacheAspect {
 				if (!StringUtil.isNullOrEmpty(handle.fields())) {
 					key = AspectUtil.getFieldKey(clazz, method, paras, key, handle.fields());
 				}
-				logger.debug("删除缓存:" + key);
+				log.debug("删除缓存:" + key);
 				LocalCache.delCache(key);
 			} catch (Exception e) {
 				e.printStackTrace();

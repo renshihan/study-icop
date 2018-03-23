@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.coody.framework.box.annotation.Around;
 import org.coody.framework.box.annotation.CronTask;
 import org.coody.framework.box.annotation.InitBean;
@@ -28,14 +28,17 @@ import org.coody.framework.util.ClassUtil;
 import org.coody.framework.util.PrintException;
 import org.coody.framework.util.PropertUtil;
 import org.coody.framework.util.StringUtil;
-
+@Slf4j
 public class BoxRute {
 
-	private static final Logger logger = Logger.getLogger(BoxRute.class);
 
 	static CglibProxy proxy = new CglibProxy();
 
+	/**
+	 * 初始化指定packets下的web项目
+	 * */
 	public static void init(String... packets) throws Exception {
+
 		Set<Class<?>> clazzs = new HashSet<Class<?>>();
 
 		for (String packet : packets) {
@@ -138,7 +141,7 @@ public class BoxRute {
 					continue;
 				}
 				if (BeanContainer.containsBean(beanName)) {
-					logger.error("存在重复的bean:" + beanName);
+					log.error("存在重复的bean:" + beanName);
 					continue;
 				}
 				BeanContainer.writeBean(beanName, bean);
@@ -162,7 +165,7 @@ public class BoxRute {
 					}
 					face.init();
 				} catch (Exception e) {
-					PrintException.printException(logger, e);
+					PrintException.printException(log, e);
 				}
 			}
 			// 执行定时任务
@@ -177,13 +180,13 @@ public class BoxRute {
 				}
 				try {
 					if (StringUtil.isNullOrEmpty(task.value())) {
-						PrintException.printException(logger, new ErrorCronException(
+						PrintException.printException(log, new ErrorCronException(
 								"CRON有误:" + bean.getClass() + ":" + method.getName() + ",Cron:" + task.value()));
 						continue;
 					}
 					TaskTrigger.nextRun(bean, method, task.value(), null);
 				} catch (Exception e) {
-					PrintException.printException(logger, new ErrorCronException(
+					PrintException.printException(log, new ErrorCronException(
 							"CRON有误:" + bean.getClass() + ":" + method.getName() + ",Cron:" + task.value()));
 					continue;
 				}
@@ -238,7 +241,7 @@ public class BoxRute {
 					for (String bindingPath : methodBinding.value()) {
 						String path = StringUtil.formatPath(clazzBinding + "/" + bindingPath);
 						if (MappingContainer.containsPath(path)) {
-							logger.error("该地址已注册:" + path);
+							log.error("该地址已注册:" + path);
 							continue;
 						}
 						MappingContainer.MvcMapping mapping = new MappingContainer.MvcMapping();
