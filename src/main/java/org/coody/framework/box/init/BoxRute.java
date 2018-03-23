@@ -44,13 +44,19 @@ public class BoxRute {
 		for (String packet : packets) {
 			Set<Class<?>> clazzsTemp = ClassUtil.getClasses(packet);
 			clazzs.addAll(clazzsTemp);
+			log.info("加载指定目录下[{}]加载类数量----{}",packet,clazzsTemp.size());
 		}
 		if (StringUtil.isNullOrEmpty(clazzs)) {
+			log.info("加载指定目录加载类为空");
 			return;
 		}
+
 		for (Class<?> clazz : BuiltContainer.initAspect) {
+			log.info("加载切面服务[{}]....",clazz.getName());
 			clazzs.add(clazz);
 		}
+		log.info("##################################");
+		log.info("开始初始化功能.....");
 		initAspect(clazzs);
 		initTask(clazzs);
 		initClass(clazzs);
@@ -61,6 +67,7 @@ public class BoxRute {
 	}
 
 	public static void initTask(Set<Class<?>> clas) {
+		log.info("初始化定时任务....");
 		if (StringUtil.isNullOrEmpty(clas)) {
 			return;
 		}
@@ -86,11 +93,13 @@ public class BoxRute {
 			}
 		}
 	}
-
+	//只加载有注解 InitBean---->Around的
 	public static void initAspect(Set<Class<?>> clas) {
+		log.info("初始化切面....");
 		if (StringUtil.isNullOrEmpty(clas)) {
 			return;
 		}
+
 		for (Class<?> cla : clas) {
 
 			InitBean initBean = cla.getAnnotation(InitBean.class);
@@ -110,7 +119,7 @@ public class BoxRute {
 					if (around == null) {
 						continue;
 					}
-					if (StringUtil.isAllNull(around.annotationClass(), around.classMappath(), around.annotationClass(),
+					if (StringUtil.isAllNull(around.annotationClass(), around.classMappath(),
 							around.methodMappath())) {
 						continue;
 					}
@@ -127,6 +136,7 @@ public class BoxRute {
 	}
 
 	public static void initClass(Set<Class<?>> clas) throws Exception {
+		log.info("初始化class类....");
 		if (StringUtil.isNullOrEmpty(clas)) {
 			return;
 		}
@@ -150,6 +160,7 @@ public class BoxRute {
 	}
 
 	public static void initRun(Set<Class<?>> clas) {
+		log.info("初始化run....");
 		for (Class<?> clazz : clas) {
 			InitBean initBean = clazz.getAnnotation(InitBean.class);
 			if (initBean == null) {
@@ -195,6 +206,7 @@ public class BoxRute {
 	}
 
 	public static void initField() throws Exception {
+		log.info("初始化成员.....");
 		for (Object bean : BeanContainer.getBeans()) {
 			List<Field> fields = loadFields(bean.getClass());
 			if (StringUtil.isNullOrEmpty(fields)) {
@@ -222,6 +234,7 @@ public class BoxRute {
 	}
 
 	public static void initMvc(Set<Class<?>> clazzs) throws Exception {
+		log.info("初始化mvc.....");
 		for (Class<?> clazz : clazzs) {
 			Object bean = BeanContainer.getBean(clazz);
 			if (StringUtil.isNullOrEmpty(bean)) {

@@ -20,9 +20,6 @@ import com.alibaba.fastjson.JSON;
 @Slf4j
 @SuppressWarnings("serial")
 public class DispatServlet extends HttpServlet{
-
-	
-	
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/icop.iml" filepath="$PROJECT_DIR$/icop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/coody-icop.iml" filepath="$PROJECT_DIR$/coody-icop.iml" />
     </modules>
   </component>
 </project>

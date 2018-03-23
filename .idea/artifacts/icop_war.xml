@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="icop:war">
-    <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="icop.war">
-      <element id="artifact" artifact-name="icop:war exploded" />
-    </root>
-  </artifact>
-</component>
