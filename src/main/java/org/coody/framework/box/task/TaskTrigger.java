@@ -27,7 +27,7 @@ public class TaskTrigger {
 			return null;
 		}
 		for(Method method:methods){
-			if(method.getName().equals("taskTrigger")){
+			if(method.getName().equals("taskTrigger")){			//获取到定时任务管理方法
 				return method;
 			}
 		}
@@ -36,11 +36,12 @@ public class TaskTrigger {
 
 	private static Map<Method, ZonedDateTime> cronExpressionMap=new ConcurrentHashMap<Method, ZonedDateTime>();
 	
-	
+	//作用：第一次调用---将定时任务放置在cronExpressionMap.put(method,zoneDateTime);
 	public static void nextRun(Object bean,Method method,String cron,ZonedDateTime zonedDateTime){
+		log.info("定时任务----nextRun");
 		//获取下次执行时间
 		CronExpression express = new CronExpression(cron);
-		if(zonedDateTime==null){
+		if(null==zonedDateTime){
 			zonedDateTime=ZonedDateTime.now(ZoneId.systemDefault());
 		}
 		zonedDateTime=express.nextTimeAfter(zonedDateTime);
@@ -54,6 +55,7 @@ public class TaskTrigger {
 			public void run() {
 				Object[] params={};
 				try {
+					log.info("线程池定时任务反射启动....");
 					method.invoke(bean, params);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -70,13 +72,18 @@ public class TaskTrigger {
 	 * @throws Throwable
 	 */
 	public static Object taskTrigger(AspectPoint aspect) throws Throwable {
+		log.info("定时任务管理-------");
 		Method method=aspect.getMethod();
 		CronTask cronTask=method.getAnnotation(CronTask.class);
 		Object bean=aspect.getBean();
 		String cron=cronTask.value();
 		try{
+			//切面进行反射
+			log.info("-----taskTrigger---切面进行反射");
 			return aspect.invoke();
 		}finally {
+			//反射完成后往线程池丢一个新的预计任务
+			log.info("计算下次开动时间");
 			ZonedDateTime zonedDateTime=cronExpressionMap.get(method);
 			nextRun(bean, method, cron,zonedDateTime);
 		}

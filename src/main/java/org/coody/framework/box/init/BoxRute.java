@@ -40,7 +40,7 @@ public class BoxRute {
 	public static void init(String... packets) throws Exception {
 
 		Set<Class<?>> clazzs = new HashSet<Class<?>>();
-
+        //此文件路径是为了拿到除框架之外的类
 		for (String packet : packets) {
 			Set<Class<?>> clazzsTemp = ClassUtil.getClasses(packet);
 			clazzs.addAll(clazzsTemp);
@@ -56,7 +56,8 @@ public class BoxRute {
 			clazzs.add(clazz);
 		}
 		log.info("##################################");
-		log.info("开始初始化功能.....");
+		log.info("开始初始化功能....{}.",clazzs.size());       //一共在这几个类里找
+
 		initAspect(clazzs);
 		initTask(clazzs);
 		initClass(clazzs);
@@ -89,19 +90,20 @@ public class BoxRute {
 				//装载切面控制方法
 				aspectEntity.setAnnotationClass(new Class<?>[]{CronTask.class});
 				aspectEntity.setAspectInvokeMethod(TaskTrigger.getTriggerMethod());
+
+
+				//将定时任务管理方法当切点方法放入切面容器中
 				BoxConstant.aspectMap.put(AspectUtil.getBeanKey(TaskTrigger.getTriggerMethod()), aspectEntity);
 			}
 		}
 	}
-	//只加载有注解 InitBean---->Around的
+	//只加载有注解 InitBean---->Around的类
 	public static void initAspect(Set<Class<?>> clas) {
 		log.info("初始化切面....");
 		if (StringUtil.isNullOrEmpty(clas)) {
 			return;
 		}
-
 		for (Class<?> cla : clas) {
-
 			InitBean initBean = cla.getAnnotation(InitBean.class);
 			if (StringUtil.isNullOrEmpty(initBean)) {
 				continue;
@@ -124,11 +126,14 @@ public class BoxRute {
 						continue;
 					}
 					AspectEntity aspectEntity=new AspectEntity();
-					//装载切面控制方法
-					aspectEntity.setAnnotationClass(around.annotationClass());
+					//装载切面控制方法的实体
+					aspectEntity.setAnnotationClass(around.annotationClass());      //什么切面  目前支持三种切面:logger,transcation,cache初始化中的三个切面
 					aspectEntity.setMethodMappath(around.methodMappath());
 					aspectEntity.setClassMappath(around.classMappath());
 					aspectEntity.setAspectInvokeMethod(method);
+
+
+					//最终将封装好类切面信息的实体类放入切面容器中   ----   key为被切方法的md5值，value为切面信息实体
 					BoxConstant.aspectMap.put(AspectUtil.getBeanKey(method), aspectEntity);
 				}
 			}
@@ -140,11 +145,13 @@ public class BoxRute {
 		if (StringUtil.isNullOrEmpty(clas)) {
 			return;
 		}
+
 		for (Class<?> cla : clas) {
 			List<String> beanNames = BeanContainer.getBeanNames(cla);
 			if (StringUtil.isNullOrEmpty(beanNames)) {
 				continue;
 			}
+			//cglib动态代理
 			Object bean = proxy.getProxy(cla);
 			for (String beanName : beanNames) {
 				if (StringUtil.isNullOrEmpty(beanName)) {
@@ -158,15 +165,20 @@ public class BoxRute {
 			}
 		}
 	}
-
+	/**
+	 * 作用：执行实体类中使用了initFace接口的bean对象（关于实现方法init()）
+	 * 			开始初始化执行定时任务
+     * 		2.第二次触发定时任务是由于第一次放入线程池后，
+	 * */
 	public static void initRun(Set<Class<?>> clas) {
-		log.info("初始化run....");
+		log.info("初始化run...（启动定时任务）.");
 		for (Class<?> clazz : clas) {
 			InitBean initBean = clazz.getAnnotation(InitBean.class);
 			if (initBean == null) {
 				continue;
 			}
 			Object bean = BeanContainer.getBean(clazz);
+			//对于实现了initFace的实现类，会在框架启动的时候运行init方法
 			if (InitFace.class.isAssignableFrom(bean.getClass())) {
 				// 初始化运行
 				try {
@@ -195,6 +207,7 @@ public class BoxRute {
 								"CRON有误:" + bean.getClass() + ":" + method.getName() + ",Cron:" + task.value()));
 						continue;
 					}
+					//将bean，方法，task内容组成
 					TaskTrigger.nextRun(bean, method, task.value(), null);
 				} catch (Exception e) {
 					PrintException.printException(log, new ErrorCronException(
@@ -205,8 +218,9 @@ public class BoxRute {
 		}
 	}
 
+	//针对被@OutBean注解过成员变量
 	public static void initField() throws Exception {
-		log.info("初始化成员.....");
+		log.info("初始化bean成员变量.....");
 		for (Object bean : BeanContainer.getBeans()) {
 			List<Field> fields = loadFields(bean.getClass());
 			if (StringUtil.isNullOrEmpty(fields)) {
@@ -226,9 +240,10 @@ public class BoxRute {
 							"注入失败:" + bean.getClass() + ",未找到Bean:" + field.getName() + "(" + field.getType() + ")");
 				}
 				Object writeValue = null;
-				field.setAccessible(true);
-				writeValue = BeanContainer.getBean(beanName);
-				field.set(bean, writeValue);
+				field.setAccessible(true);		//改为true的意思是然我们在反射中访问私有变量
+//				log.info("注入bean的beanName----{}",beanName);	//org.coody.web.service.IcopService
+				writeValue = BeanContainer.getBean(beanName);	//根据beanName到bean容器中找对应的实例对象，然后再设置回去
+				field.set(bean, writeValue);		//将bean的name添加到fld
 			}
 		}
 	}

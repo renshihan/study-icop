@@ -8,6 +8,7 @@ import org.coody.framework.util.StringUtil;
 
 @Slf4j
 public class BoxServletListen implements ServletContextListener {
+	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
 		System.out.println("运行contextDestroyed");
 	}
@@ -15,6 +16,7 @@ public class BoxServletListen implements ServletContextListener {
 	 * servlet监听器负责项目的初始化
 	 * 该监听器配置在web.xml中
 	 * */
+	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
 			String packet = event.getServletContext().getInitParameter("scanPacket");

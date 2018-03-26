@@ -31,14 +31,14 @@ public class CglibProxy implements MethodInterceptor {
 	public static final Map<Method, Set<Method>> interceptMap = new ConcurrentHashMap<Method, Set<Method>>();
 
 	public Object getProxy(Class<?> clazz) throws InstantiationException, IllegalAccessException {
-		Integer modifier = clazz.getModifiers();
-		if (Modifier.isAbstract(modifier)) {
+		Integer modifier = clazz.getModifiers();	//获取到本类属性的修饰符
+		if (Modifier.isAbstract(modifier)) {		//如果是抽象类
 			return null;
 		}
-		if (Modifier.isInterface(modifier)) {
+		if (Modifier.isInterface(modifier)) {		//如果是接口
 			return null;
 		}
-		if (!isNeedProxyMethods(clazz)) {
+		if (!isNeedProxyMethods(clazz)) {			//如果不需要代理，就实例化
 			return clazz.newInstance();
 		}
 		Enhancer enhancer = new Enhancer();
@@ -46,9 +46,16 @@ public class CglibProxy implements MethodInterceptor {
 		enhancer.setSuperclass(clazz);
 		enhancer.setCallback(this);
 		// 通过字节码技术动态创建子类实例
-		return enhancer.create();
+		return enhancer.create();			//如果是需要代理，就需要使用cglib。
 	}
 
+	/**
+	 * 判断是否需要cglib动态代理的条件：
+	 * 1.该类必须有方法
+	 * 2.该类必须被几个切面注解注释过（有一个就可以）
+	 *
+	 * 需要代理的话，将需要拦截的方法，以及对应的切面方法放入拦截容器中
+	 * */
 	private boolean isNeedProxyMethods(Class<?> clazz) {
 		if(StringUtil.isNullOrEmpty(clazz.getDeclaredMethods())){
 			return false;
@@ -59,14 +66,15 @@ public class CglibProxy implements MethodInterceptor {
 				if(!needProxy(clazz, aspectEntity, method)){
 					continue;
 				}
+				needProxy= true;
+
 				if (interceptMap.containsKey(method)) {
 					interceptMap.get(method).add(aspectEntity.getAspectInvokeMethod());
-					needProxy= true;
+				}else{
+					Set<Method> aspectMethods = new HashSet<Method>();
+					aspectMethods.add(aspectEntity.getAspectInvokeMethod());
+					interceptMap.put(method, aspectMethods);
 				}
-				Set<Method> aspectMethods = new HashSet<Method>();
-				aspectMethods.add(aspectEntity.getAspectInvokeMethod());
-				interceptMap.put(method, aspectMethods);
-				needProxy= true;
 			}
 		}
 		return needProxy;
@@ -109,9 +117,10 @@ public class CglibProxy implements MethodInterceptor {
 		}
 		return true;
 	}
-	
+	@Override
 	// 拦截父类所有方法的调用
 	public Object intercept(Object bean, Method method, Object[] params, MethodProxy proxy) throws Throwable {
+		//如果拦截容器中没有该方法的切面，
 		if (!interceptMap.containsKey(method)) {
 			return proxy.invokeSuper(bean, params);
 		}
